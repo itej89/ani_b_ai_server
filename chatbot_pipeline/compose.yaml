@@ -1,0 +1,85 @@
+services:
+ 
+  tts:
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+    image: "coqui_tts"
+    ports:
+      - "127.0.0.1:3578:3578"
+    volumes:
+      - ./Coqui_TTS/server:/app/tts
+      
+  tte:
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+    image: "t5_tte"
+    ports:
+      - "127.0.0.1:3579:3579"
+    volumes:
+      - ./T5_TTE/server:/app/tte
+    
+  chat:
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+    image: "chat"
+    ports:
+      - "127.0.0.1:3580:3580"
+    volumes:
+      - ./Chat/server:/app/chat
+  
+  intent:
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+    image: "zero_shot_intent"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    ports:
+      - "127.0.0.1:3581:3581"
+    volumes:
+      - ./Intent/server:/app/intent
+
+  stt:
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+    image: "whisper"
+    ports:
+      - "127.0.0.1:3582:3582"
+    volumes:
+      - ./WhisperSTT/WhisperSTT:/app/whisper
+
+  nlp:
+    image: "redis_nlp"
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - ./fmService/fmService:/app/nlp

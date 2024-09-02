@@ -1,0 +1,35 @@
+FROM redis
+
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
+RUN apt-get update
+
+RUN apt-get -y install gcc
+RUN apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+
+RUN wget \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && mkdir /root/.conda \
+    && bash Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh
+
+RUN conda --version
+
+
+# COPY ./Data_Resources .
+
+RUN mkdir -p /app/fmService
+WORKDIR /app/fmService
+
+# Create the environment:
+COPY ./fmService .
+
+RUN conda env create -f fmService.yml
+
+RUN conda info --envs
+
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "fmService", "/bin/bash", "-c"]
+
+
+#ENTRYPOINT ["conda", "run", "-n", "EmOS3.6", "python", "-u" ,"/app/EmoS/Server.py"]
